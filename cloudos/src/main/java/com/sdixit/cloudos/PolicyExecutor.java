@@ -3,6 +3,7 @@ package com.sdixit.cloudos;
 import com.sdixit.cloudos.dto.PolicyDTO;
 import com.sdixit.cloudos.entity.Policy;
 import com.sdixit.cloudos.entity.PolicyCondition;
+import com.sdixit.cloudos.entity.PolicyRepository;
 import com.sdixit.cloudos.services.PolicyService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
@@ -14,6 +15,9 @@ public class PolicyExecutor {
 
     @Autowired
     public PolicyService policyService;
+
+    @Autowired
+    PolicyRepository policyRepository;
 
     public void execute(){
         PolicyDTO policy = policyService.getPolicy("6a1df884-8e30-11ea-bc55-0242ac130003");
@@ -51,6 +55,9 @@ public class PolicyExecutor {
 
         policyService.createPolicy(p);
 
-        //policyService.getPolicy();
+        policyRepository.findByEntityName("SHIPMENT").forEach(pol -> {
+            System.out.println("POLICY: "+pol);
+            System.out.println("DTO : "+policyService.convertToPolicyDTO(pol));
+        });
     }
 }

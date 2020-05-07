@@ -146,9 +146,6 @@ public class Policy {
 			pc = new ObjectMapper().convertValue(conditionObject,
 					new TypeReference<PolicyCondition>() {
 					});
-
-			System.out.println("\n ================== Object Representation ============= \n" + pc);
-
 		} catch (Exception e) {
 				e.printStackTrace();
 		}

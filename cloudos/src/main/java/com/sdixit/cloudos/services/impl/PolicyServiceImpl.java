@@ -3,6 +3,7 @@ package com.sdixit.cloudos.services.impl;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import com.sdixit.cloudos.entity.PolicyCondition;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.SystemUtils;
 import org.slf4j.Logger;
@@ -26,7 +27,7 @@ public class PolicyServiceImpl implements PolicyService {
 
 	@Override
 	public PolicyDTO getPolicy(String policyId) {
-		Policy policy = policyRepository.findById(policyId);
+		Policy policy = policyRepository.findByPolicyId(policyId);
 
 		return convertToPolicyDTO(policy);
 	}
@@ -41,7 +42,7 @@ public class PolicyServiceImpl implements PolicyService {
 			policy.setCreatedAt(Calendar.getInstance().getTime());
 		}
 		if (StringUtils.isEmpty(policy.getCreatedBy())) {
-			policy.setCreatedBy(SecurityUtils.getCurrentUser());
+			policy.setCreatedBy("shiva");
 		}
 		try {
 			if (validate(policy)) {
@@ -60,13 +61,13 @@ public class PolicyServiceImpl implements PolicyService {
 
 	@Override
 	public void updatePolicy(PolicyDTO policyDTO) {
-		if (policyRepository.findById(policyDTO.getId()) != null) {
+		if (policyRepository.findByPolicyId(policyDTO.getId()) != null) {
 			try {
 				if (policyDTO.getModifiedAt() == null) {
 					policyDTO.setModifiedAt(Calendar.getInstance().getTime());
 				}
 				if (StringUtils.isEmpty(policyDTO.getModifiedBy())) {
-					policyDTO.setModifiedBy(SecurityUtils.getCurrentUser());
+					policyDTO.setModifiedBy("shiva");
 				}
 				createPolicy(policyDTO);
 			} catch (Exception e) {
@@ -82,7 +83,7 @@ public class PolicyServiceImpl implements PolicyService {
 
 	@Override
 	public void deletePolicy(String policyId) {
-		Policy policy = policyRepository.findById(policyId);
+		Policy policy = policyRepository.findByPolicyId(policyId);
 		if (policy != null) {
 			try {
 				policyRepository.delete(policy);
@@ -131,7 +132,10 @@ public class PolicyServiceImpl implements PolicyService {
 				.entityName(p.getEntityName()).actions(p.getActions()).isAllowed(p.isAllowed())
 				.moduleName(p.getModuleName()).build();
 
-		policy.setConditions(p.getPolicyConditions());
+		PolicyCondition pc = p.getPolicyConditions();
+		if(pc != null) {
+			policy.setConditions(pc);
+		};
 
 		if (p.isAllowed()) {
 			policy.setEffect(Policy.ALLOW_ACCESS);
