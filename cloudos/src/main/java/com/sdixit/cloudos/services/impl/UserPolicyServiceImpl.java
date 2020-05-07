@@ -29,8 +29,14 @@ public class UserPolicyServiceImpl implements UserPolicyService {
 	@Override
 	public void createUserPolicy(String userId, Policy policy) {
 		try {
-			UserPolicy userPolicy = UserPolicy.builder().userId(userId).policyId(policy.getId())
-					.entityName(policy.getEntityName()).build();
+			UserPolicy userPolicy = UserPolicy.builder()
+					.userId(userId)
+					.policyId(policy.getId())
+					.entityName(policy.getEntityName())
+					.conditionExpression(policy.getConditionExpression())
+					.targetExpression(policy.generateTargetExpression())
+					.moduleName(policy.getModuleName())
+					.build();
 			userPolicyRepository.save(userPolicy);
 		} catch (Exception e) {
 

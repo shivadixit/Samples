@@ -41,9 +41,10 @@ public class PolicyExecutor {
                 .build();
 
         PolicyDTO p = PolicyDTO.builder()
+                .id("b57f71cb-2022-4ef8-8cec-b8797e932baf")
                 .entityName("SHIPMENT")
-                .name("SHIPMENT_RECEIVER_RESTRICTION2")
-                .actions(new HashSet<String>(Arrays.asList("CREATE", "UPDATE", "DELETE", "DETAIL", "SUMMARY")))
+                .name("SHIPMENT_RECEIVER_RESTRICTION1")
+                .actions(new HashSet<String>(Arrays.asList("CREATE", "UPDATE")))
                 .tenantId("ddadc454-0dc1-4fd2-aecc-1684918962e9")
                 .isAllowed(true)
                 .effect(Policy.ALLOW_ACCESS)

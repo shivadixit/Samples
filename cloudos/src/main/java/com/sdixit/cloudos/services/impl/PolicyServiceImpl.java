@@ -4,6 +4,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import com.sdixit.cloudos.entity.PolicyCondition;
+import com.sdixit.cloudos.services.UserPolicyService;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.SystemUtils;
 import org.slf4j.Logger;
@@ -22,6 +23,9 @@ public class PolicyServiceImpl implements PolicyService {
 
 	@Autowired
 	PolicyRepository policyRepository;
+
+	@Autowired
+	UserPolicyService userPolicyService;
 
 	static final Logger LOG = LoggerFactory.getLogger(PolicyServiceImpl.class);
 
@@ -42,7 +46,7 @@ public class PolicyServiceImpl implements PolicyService {
 			policy.setCreatedAt(Calendar.getInstance().getTime());
 		}
 		if (StringUtils.isEmpty(policy.getCreatedBy())) {
-			policy.setCreatedBy("shiva");
+			policy.setCreatedBy(SecurityUtils.getCurrentUser());
 		}
 		try {
 			if (validate(policy)) {
@@ -67,9 +71,11 @@ public class PolicyServiceImpl implements PolicyService {
 					policyDTO.setModifiedAt(Calendar.getInstance().getTime());
 				}
 				if (StringUtils.isEmpty(policyDTO.getModifiedBy())) {
-					policyDTO.setModifiedBy("shiva");
+					policyDTO.setModifiedBy(SecurityUtils.getCurrentUser());
 				}
 				createPolicy(policyDTO);
+
+				userPolicyService.updateUserPolicy(SecurityUtils.getCurrentUser(), new Policy(policyDTO));
 			} catch (Exception e) {
 				LOG.error("Couldn't update Policy " + policyDTO.getName() + " for " + policyDTO.getTenantId() + ":"
 						+ e.getMessage());

@@ -85,9 +85,6 @@ public class Policy {
 
 	public static final String ALLOW_ACCESS = "ALLOW";
 	public static final String DENY_ACCESS = "DENY";
-	public static final String KEY_MUST = "must";
-	public static final String KEY_SHOULD = "should";
-
 
 	public Policy(PolicyDTO policyDTO) {
 		this.id = policyDTO.getId();
@@ -109,7 +106,7 @@ public class Policy {
 
 		setConditions(policyDTO.getConditions());
 
-		this.conditionExpression = generateConditionExpression();
+		this.conditionExpression = generateConditionExpression(policyDTO.getConditions());
 		this.targetExpression = generateTargetExpression();
 	}
 
@@ -153,32 +150,26 @@ public class Policy {
 		return  pc;
 	}
 
-	public String generateConditionExpression() {
-		StringBuilder conditionExpr = null;
-	/*	StringBuilder mustConditionExpr = new StringBuilder();
-		StringBuilder shouldConditionExpr = new StringBuilder();
+	public String generateConditionExpression(PolicyCondition pc) {
+		StringBuilder mustConditionExpr = new StringBuilder();
 
-		this.conditions.keySet().forEach(k -> {
-			if(k.equalsIgnoreCase(KEY_MUST)){
-				this.conditions.get(k).getConditions().forEach(c -> {
-					if(StringUtils.isEmpty(mustConditionExpr)){
-						mustConditionExpr.append("("+ c.lhs+" " +c.operator +" "+ c.rhs +")");
-					} else {
-						mustConditionExpr.append("&& ("+ c.lhs+" " +c.operator +" "+ c.rhs +")");
-					}
-				});
-			} else if(k.equalsIgnoreCase(KEY_SHOULD)){
-				this.conditions.get(k).getConditions().forEach(c -> {
+		pc.getMust().forEach(conditions -> {
+			StringBuilder shouldConditionExpr = new StringBuilder();
+			conditions.getShould().forEach(op -> {
+				String expression =  op.lhs+" " +op.operator +" "+ op.rhs;
 					if(StringUtils.isEmpty(shouldConditionExpr)){
-						shouldConditionExpr.append("("+ c.lhs+" " +c.operator +" "+ c.rhs +")");
+						shouldConditionExpr.append("("+ expression +")");
 					} else {
-						shouldConditionExpr.append("|| ("+ c.lhs+" " +c.operator +" "+ c.rhs +")");
+						shouldConditionExpr.append("|| ("+ expression +")");
 					}
 				});
+			if(StringUtils.isEmpty(mustConditionExpr)){
+				mustConditionExpr.append("("+ shouldConditionExpr +")");
+			} else {
+				mustConditionExpr.append("&& ("+ shouldConditionExpr +")");
 			}
 		});
-		conditionExpr = new StringBuilder("(" + mustConditionExpr + ") && (" + shouldConditionExpr + ")"); */
-		return null; // conditionExpr.toString();
+		return mustConditionExpr.toString();
 	}
 
 	public String generateTargetExpression() {
